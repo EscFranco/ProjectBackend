@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "gusto": "Agua",
+    "precio": 220
+  },
+  {
+    "id": 2,
+    "gusto": "Coca Cola",
+    "precio": 150
+  },
+  {
+    "id": 3,
+    "gusto": "Fanta",
+    "precio": 150
+  },
+  {
+    "gusto": "Limonada",
+    "precio": 300,
+    "id": 4
+  },
+  {
+    "gusto": "Agua Tonica",
+    "precio": 300,
+    "id": 5
+  }
+]
