@@ -23,10 +23,5 @@
     "gusto": "Agua Tonica",
     "precio": 300,
     "id": 5
-  },
-  {
-    "gusto": "Vino",
-    "precio": 400,
-    "id": 6
   }
 ]

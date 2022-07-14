@@ -1,0 +1,17 @@
+extends layout 
+
+block body 
+    div
+        h2  BIENVENIDO A LA PAGINA
+        h3  POR FAVOR INGRESE LOS PRODUCTOS
+
+        form(action='/productos', method='POST') 
+            | Gusto : 
+            input(type='text', name='gusto')
+            | Precio : 
+            input(type='number', name='precio')
+            button  Enviar
+        button
+            a(href='/productos')  Ir a Productos 
+
+

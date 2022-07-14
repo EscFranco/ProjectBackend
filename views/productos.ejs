@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/header.ejs')-%>
+</head>
+
+<body>
+    <% if (answer) { %>
+        <table class='table mt-3'>
+            <thead>
+                <tr>
+                    <th class="align-middle" scope="col">ID</th>
+                    <th class="align-middle" scope="col">Gusto</th>
+                    <th class="align-middle" scope="col">Precio</th>
+                    <th class="align-middle" scope="col">Imagen</th>
+                </tr>
+            </thead>
+            <% answer.forEach((producto) => { %>
+                <thead>
+                    <tr>
+                        <td class="align-middle" scope="row"><%=producto.id%></td>
+                        <td class="align-middle"><%=producto.gusto%></td>
+                        <td class="align-middle">$<%=producto.precio%></td>
+                        <!-- <td class="align-middle"><img src=<%=producto.imagen%> alt='imagen del producto'
+                                style="width: 100px" /></td>
+                    </tr> -->
+                </thead>
+                <%  }) %>
+        </table>
+        <% } else { %>
+            <h1>No se encontraron productos.</h1>
+            <% } %>
+
+                <button> <a href="/"> Ir al formulario </a> </button>
+</body>
+
+</html>

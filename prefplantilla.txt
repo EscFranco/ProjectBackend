@@ -1,0 +1,3 @@
+En preferencia todavia no sabria si elegir entre HBS o EJS, pug en cambio tiene que ser todo muy perfecto si no te tira errores por todos lados.
+
+Y si tuviera que elegir uno entre los 2, elegiria EJS que al parecer y segun vi es una tecnologia mas nueva
