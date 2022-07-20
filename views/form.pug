@@ -6,10 +6,12 @@ block body
         h3  POR FAVOR INGRESE LOS PRODUCTOS
 
         form(action='/productos', method='POST') 
-            | Gusto : 
+            | Nombre de Producto : 
             input(type='text', name='gusto')
             | Precio : 
             input(type='number', name='precio')
+            | Link de Imagen : 
+            input(type='text', name='img')
             button  Enviar
         button
             a(href='/productos')  Ir a Productos 

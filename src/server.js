@@ -2,7 +2,6 @@
 
 const express = require('express');
 const { engine } = require('express-handlebars');
-
 const app = express();
 
 
@@ -50,14 +49,18 @@ class Contenedor {
             const contents = await fs.promises.readFile(this.ruta, 'utf-8')
             const agregar = JSON.parse(contents)
             let valor = agregar.slice(-1).pop()
+            if (valor === undefined) {
+                agregar.push({ ...itemnuevo, id: 1 })
+                await fs.promises.writeFile(this.ruta, JSON.stringify(agregar, null, 2))
+            } else {
             let numero = valor.id + 1
             agregar.push({ ...itemnuevo, id: numero })
             await fs.promises.writeFile(this.ruta, JSON.stringify(agregar, null, 2))
+            }
         } catch (error) {
             console.log(`Hubo un error ${error}`);
         }
     }
-
 }
 
 

@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <% if (answer) { %>
+    <% if (answer.length) { %>
         <table class='table mt-3'>
             <thead>
                 <tr>
@@ -16,17 +16,23 @@
                     <th class="align-middle" scope="col">Imagen</th>
                 </tr>
             </thead>
-            <% answer.forEach((producto) => { %>
+            <% answer.forEach((producto)=> { %>
                 <thead>
                     <tr>
-                        <td class="align-middle" scope="row"><%=producto.id%></td>
-                        <td class="align-middle"><%=producto.gusto%></td>
-                        <td class="align-middle">$<%=producto.precio%></td>
-                        <!-- <td class="align-middle"><img src=<%=producto.imagen%> alt='imagen del producto'
-                                style="width: 100px" /></td>
-                    </tr> -->
+                        <td class="align-middle" scope="row">
+                            <%=producto.id%>
+                        </td>
+                        <td class="align-middle">
+                            <%=producto.gusto%>
+                        </td>
+                        <td class="align-middle">$<%=producto.precio%>
+                        </td>
+                        <td class="align-middle">
+                            <img src=<%=producto.img%> alt="imagen del producto" style="width: 100px" />
+                        </td>
+                    </tr>
                 </thead>
-                <%  }) %>
+                <% }) %>
         </table>
         <% } else { %>
             <h1>No se encontraron productos.</h1>
