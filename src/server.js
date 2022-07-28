@@ -1,92 +1,140 @@
 // -----------------  EXPRESS --------------------- //
 
-const express = require('express');
-const { engine } = require('express-handlebars');
-const app = express();
+const express = require('express')
+const app = express()
+const { Router } = require('express')
+const Contenedor = require('./contenedores/Contenedor')
 
+// -------------------------------- RUTAS ------------------------- //
 
-// -----------------  HANDLEBARS --------------------- //
+const routerProductos = new Router()
+const routerCarrito =  new Router();
 
-// app.engine('hbs', engine({ extname: "hbs", defaultLayout: "main.hbs", layoutsDir: "", }));
-// app.set('view engine', 'hbs');
-// app.set("views", "./views");
-// app.use(express.urlencoded({ extended: true }));
+app.use('/api/productos', routerProductos)
+app.use('/api/carrito', routerCarrito)
+app.use(express.static('public'));
+routerProductos.use(express.json())
+routerProductos.use(express.urlencoded({ extended: true }))
+routerCarrito.use(express.json())
+routerCarrito.use(express.urlencoded({ extended: true }))
 
-// -----------------  PUG  --------------------- //
+// ---------------------------- ADMINISTRADOR ---------------- // 
 
-// app.set ('views', './views');
-// app.set ('view engine', 'pug');
-// app.use(express.urlencoded({ extended: true }));
+const checkAdmin = true 
 
-// -----------------  EJS  --------------------- //
-
-app.set ('views', './views');
-app.set('view engine', 'ejs');
-app.use(express.urlencoded({ extended: true }));
-
-// --------------------- FILESYSTEM ------------- //
-const fs = require('fs')
-
-// -------------------- CLASE --------- //
-
-class Contenedor {
-    constructor(ruta) {
-        this.ruta = ruta
+function errorAdmin (ruta , metodo) {
+    const error = {
+        error : -1
     }
-
-    async getAll() {
-        try {
-            const load = JSON.parse(await fs.promises.readFile(this.ruta, 'utf-8'))
-            return load;
-        } catch (error) {
-            console.log(`Hubo un error ${error}`);
-        }
+    if (ruta && metodo) {
+        error.descripcion = `ruta '${ruta}' metodo '${metodo}' no autorizado`
+    } else {
+        error.descripcion = 'no autorizado'
     }
+    return error
+}
 
-    async newProduct(objeto) {
-        try {
-            let itemnuevo = objeto
-            const contents = await fs.promises.readFile(this.ruta, 'utf-8')
-            const agregar = JSON.parse(contents)
-            let valor = agregar.slice(-1).pop()
-            if (valor === undefined) {
-                agregar.push({ ...itemnuevo, id: 1 })
-                await fs.promises.writeFile(this.ruta, JSON.stringify(agregar, null, 2))
-            } else {
-            let numero = valor.id + 1
-            agregar.push({ ...itemnuevo, id: numero })
-            await fs.promises.writeFile(this.ruta, JSON.stringify(agregar, null, 2))
-            }
-        } catch (error) {
-            console.log(`Hubo un error ${error}`);
-        }
+function onlyAdmin(req, res, next) {
+    if (!checkAdmin) {
+        res.json(errorAdmin())
+    } else {
+        next()
     }
 }
 
-
 // ------------------------------- PRODUCTOS ------------------- //
 
-let usuario = new Contenedor('./productos.txt')
+const productosApi = new Contenedor('./src/files/productos.json')
 
-app.get('/', async (req, res) => {
-    res.render('form')
+routerProductos.get('/', async (req, res) => {
+    let answer = await productosApi.getAll()
+    res.json(answer)
 })
 
-app.get('/productos', async (req, res) => {
-    let answer = await usuario.getAll()
-    res.render('productos', { answer })
+routerProductos.get('/:id', async (req, res) => {
+    const { id } = req.params
+    const numero = parseInt(id)
+    let answer = await productosApi.getById(numero)
+    res.json(answer)
 })
 
-
-app.post('/productos', async (req, res) => {
+routerProductos.post('/', onlyAdmin , async (req, res) => {
     const objeto = req.body
-    await usuario.newProduct(objeto)
-    res.redirect('/')
+    await productosApi.newProduct(objeto)
+    let listaFinal = await productosApi.getAll()
+    res.json(listaFinal)
 })
+
+routerProductos.put('/:id', onlyAdmin, async (req, res) => {
+    const objeto = req.body
+    const { id } = req.params
+    const numero = parseInt(id)
+    let answer = await productosApi.updateProduct(numero, objeto)
+    res.json (answer)
+})
+
+routerProductos.delete('/:id', onlyAdmin, async (req, res) => {
+    const { id } = req.params
+    const numero = parseInt(id)
+    let answer = await productosApi.deleteById(numero)
+    res.json (answer)
+})
+
+// ------------------------------- CARRITO ------------------- //
+
+const carritoApi = new Contenedor('./src/files/carrito.json')
+
+routerCarrito.get('/', async (req, res) => {
+    let answer = await carritoApi.getAll()
+    res.json(answer)
+})
+
+routerCarrito.post('/', async (req, res) => {
+    let answer = await carritoApi.newProduct({productos : []})
+    res.json(`El nuevo carrito creado tiene el ID ${answer}`)
+})
+
+routerCarrito.delete('/:id', async (req, res) => {
+
+    const { id } = req.params
+    const numero = parseInt(id)
+    let answer = await carritoApi.deleteById(numero)
+    res.json(answer)
+})
+
+routerCarrito.get('/:id/productos', async (req, res) => {
+    const { id } = req.params
+    const numero = parseInt(id)
+    let answer = await carritoApi.getById(numero)
+    res.json(answer.productos)
+})
+
+routerCarrito.post('/:id/productos', async (req, res) => {
+    const { id } = req.params
+    const numero = parseInt(id)
+    const carrito = await carritoApi.getById(numero)
+    const producto = await productosApi.getById(req.body.id)
+    carrito.productos.push(producto)
+    const answer = await carritoApi.updateProduct(numero, carrito)
+    res.json(answer)
+})
+
+routerCarrito.delete('/:id/productos/:id_prod', async (req, res) => {
+    const { id } = req.params
+    const numero = parseInt(id)
+    const carrito = await carritoApi.getById(numero)    
+    const index = carrito.productos.findIndex(producto => producto.id == req.params.id_prod)
+    if (index != -1) {
+        carrito.productos.splice(index, 1)
+        await carritoApi.updateProduct(carrito, req.params.id)
+    } else {
+        res.json('Este producto no se encuentra en el carrito')
+    }
+});
 
 // ---------------------------------------- SERVER --------------------------------------// 
 
-const PORT = 8080
+const PORT = 8080 || process.env.port
 const server = app.listen(PORT, () => {
     console.log(`Servidor http escuchando en el puerto ${server.address().port}`)
 })
