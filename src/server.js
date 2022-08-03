@@ -8,23 +8,35 @@ const Contenedor = require('./contenedores/Contenedor')
 // -------------------------------- RUTAS ------------------------- //
 
 const routerProductos = new Router()
-const routerCarrito =  new Router();
-
+const routerCarrito = new Router();
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.static('public'));
 app.use('/api/productos', routerProductos)
 app.use('/api/carrito', routerCarrito)
-app.use(express.static('public'));
-routerProductos.use(express.json())
-routerProductos.use(express.urlencoded({ extended: true }))
-routerCarrito.use(express.json())
-routerCarrito.use(express.urlencoded({ extended: true }))
+
+// HANDLER
+
+const urlCheck = (req, res, next) => {
+	if (req.url.includes('/api/carrito') || req.url.includes('/api/productos'))
+		next()
+	else
+		res.json({
+			error: -2,
+			description: `ruta ${req.originalUrl} metodo ${req.method} no implementada`,
+		});
+};
+
+app.use(urlCheck)
+
 
 // ---------------------------- ADMINISTRADOR ---------------- // 
 
-const checkAdmin = true 
+const checkAdmin = true
 
-function errorAdmin (ruta , metodo) {
+function errorAdmin(ruta, metodo) {
     const error = {
-        error : -1
+        error: -1
     }
     if (ruta && metodo) {
         error.descripcion = `ruta '${ruta}' metodo '${metodo}' no autorizado`
@@ -36,7 +48,7 @@ function errorAdmin (ruta , metodo) {
 
 function onlyAdmin(req, res, next) {
     if (!checkAdmin) {
-        res.json(errorAdmin())
+        res.json(errorAdmin(req.originalUrl, req.method))
     } else {
         next()
     }
@@ -58,7 +70,7 @@ routerProductos.get('/:id', async (req, res) => {
     res.json(answer)
 })
 
-routerProductos.post('/', onlyAdmin , async (req, res) => {
+routerProductos.post('/', onlyAdmin, async (req, res) => {
     const objeto = req.body
     await productosApi.newProduct(objeto)
     let listaFinal = await productosApi.getAll()
@@ -70,14 +82,14 @@ routerProductos.put('/:id', onlyAdmin, async (req, res) => {
     const { id } = req.params
     const numero = parseInt(id)
     let answer = await productosApi.updateProduct(numero, objeto)
-    res.json (answer)
+    res.json(answer)
 })
 
 routerProductos.delete('/:id', onlyAdmin, async (req, res) => {
     const { id } = req.params
     const numero = parseInt(id)
     let answer = await productosApi.deleteById(numero)
-    res.json (answer)
+    res.json(answer)
 })
 
 // ------------------------------- CARRITO ------------------- //
@@ -90,7 +102,7 @@ routerCarrito.get('/', async (req, res) => {
 })
 
 routerCarrito.post('/', async (req, res) => {
-    let answer = await carritoApi.newProduct({productos : []})
+    let answer = await carritoApi.newProduct({ productos: [] })
     res.json(`El nuevo carrito creado tiene el ID ${answer}`)
 })
 
@@ -122,15 +134,18 @@ routerCarrito.post('/:id/productos', async (req, res) => {
 routerCarrito.delete('/:id/productos/:id_prod', async (req, res) => {
     const { id } = req.params
     const numero = parseInt(id)
-    const carrito = await carritoApi.getById(numero)    
-    const index = carrito.productos.findIndex(producto => producto.id == req.params.id_prod)
+    const carrito = await carritoApi.getById(numero)
+    const index = carrito.productos.findIndex(producto => producto.id == parseInt(req.params.id_prod))  
     if (index != -1) {
-        carrito.productos.splice(index, 1)
-        await carritoApi.updateProduct(carrito, req.params.id)
+        carrito.productos.splice(index, 1) 
+        await carritoApi.updateProduct(numero, carrito)
+        res.end()
     } else {
         res.json('Este producto no se encuentra en el carrito')
     }
 });
+
+
 
 // ---------------------------------------- SERVER --------------------------------------// 
 

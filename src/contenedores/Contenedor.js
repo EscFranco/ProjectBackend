@@ -58,6 +58,7 @@ class Contenedor {
         try {
             const contenido = JSON.parse(await fs.promises.readFile(this.ruta, 'utf-8'))
             const object = contenido.find(o => o.id === numero)
+            console.log(object)
             const hora = new Date().toLocaleString('es-AR')
             const timestamp = { hora } 
             

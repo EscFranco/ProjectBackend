@@ -1,6 +1,18 @@
 [
   {
-    "hora": "27/7/2022 21:10:59",
+    "productos": [
+      {
+        "id": 1,
+        "nombre": "Agua",
+        "precio": 220,
+        "img": "https://http2.mlstatic.com/D_Q_NP_777853-MLA44632277984_012021-R.webp",
+        "descripcion": "Bebida sin Alcohol",
+        "codigo": "AG01",
+        "stock": 30,
+        "hora": "27/7/2022 20:29:38"
+      }
+    ],
+    "hora": "2/8/2022 20:59:06",
     "id": 1
   },
   {
@@ -10,16 +22,6 @@
   },
   {
     "productos": [
-      {
-        "nombre": "Sprite",
-        "precio": 250,
-        "id": 4,
-        "img": "https://http2.mlstatic.com/D_Q_NP_942940-MLA48522072085_122021-R.webp",
-        "descripcion": "Bebida sin Alcohol",
-        "codigo": "SP01",
-        "stock": 30,
-        "hora": "27/7/2022 20:24:38"
-      },
       {
         "id": 1,
         "nombre": "Agua",
@@ -32,7 +34,7 @@
       }
     ],
     "id": 3,
-    "hora": "27/7/2022 23:07:23"
+    "hora": "2/8/2022 21:00:04"
   },
   {
     "productos": [],
