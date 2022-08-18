@@ -18,7 +18,7 @@
   {
     "productos": [],
     "id": 2,
-    "hora": "27/7/2022 23:05:19"
+    "hora": "17/8/2022 21:21:56"
   },
   {
     "productos": [
@@ -37,8 +37,19 @@
     "hora": "2/8/2022 21:00:04"
   },
   {
-    "productos": [],
+    "productos": [
+      {
+        "id": 3,
+        "nombre": "Fanta",
+        "precio": 400,
+        "img": "https://http2.mlstatic.com/D_Q_NP_831139-MLA44824214566_022021-R.webp",
+        "descripcion": "Bebida sin Alcohol",
+        "codigo": "FA01",
+        "stock": 30,
+        "hora": "27/7/2022 20:24:38"
+      }
+    ],
     "id": 4,
-    "hora": "27/7/2022 23:05:21"
+    "hora": "17/8/2022 21:21:09"
   }
 ]
